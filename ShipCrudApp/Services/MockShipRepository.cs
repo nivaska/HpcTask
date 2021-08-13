@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ShipCrudApp.Services
 {
+    /// <summary>
+    /// A mock repository class to save ship data in the memory using a static field
+    /// </summary>
     class MockShipRepository : IShipRepository
     {
         private static readonly List<Ship> shipsDb = new List<Ship>();

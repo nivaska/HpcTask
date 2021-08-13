@@ -9,21 +9,26 @@ using System.Windows.Controls;
 
 namespace ShipCrudApp.Helpers
 {
-    public class ViewModelBase : NotifyPropertyChanged, INotifyDataErrorInfo
+    /// <summary>
+    /// Base class to be used by ViewModels
+    /// Implements INotifyDataErrorInfo interface to perform validation
+    /// </summary>
+    public abstract class ViewModelBase : NotifyPropertyChanged, INotifyDataErrorInfo
 	{
         private Dictionary<string, List<string>> errorsList;
         private Dictionary<String, List<ValidationRule>> validationRules;
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
-        public Dictionary<string, List<ValidationRule>> ValidationRules 
-        { 
-            get => validationRules; 
-            set => validationRules = value; 
-        }
 
         public ViewModelBase()
         {
             errorsList = new Dictionary<string, List<string>>();
             validationRules = new Dictionary<string, List<ValidationRule>>();
+        }
+
+        public Dictionary<string, List<ValidationRule>> ValidationRules
+        {
+            get => validationRules;
+            set => validationRules = value;
         }
 
         public bool HasErrors => errorsList.Any();

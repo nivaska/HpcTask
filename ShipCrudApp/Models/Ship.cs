@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ShipCrudApp.Models
 {
+    /// <summary>
+    /// The Ship Model Class
+    /// </summary>
     public class Ship
     {
         private int id;

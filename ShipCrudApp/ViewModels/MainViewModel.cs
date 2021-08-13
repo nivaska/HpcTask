@@ -45,12 +45,6 @@ namespace ShipCrudApp.ViewModels
             formMode = ShipFormMode.NewShip;
         }
 
-
-        public void Initialize()
-        {
-            this.RefreshAllShips();
-        }
-
         #region Properties
 
         public string NewShipName
@@ -108,6 +102,9 @@ namespace ShipCrudApp.ViewModels
             }
         }
 
+        /// <summary>
+        /// Title to be displayed as the Form Group control header
+        /// </summary>
         public string ShipFormTitle
         {
             get {
@@ -169,8 +166,11 @@ namespace ShipCrudApp.ViewModels
             }
         }
 
+        #endregion
+
         private void SaveShip()
         {
+            // check the current form mode and invoke the suitable function from the data service
             if (this.formMode == ShipFormMode.NewShip)
             {
                 this.dataService.AddNewShip(newShipName, newShipCode, newShipLength, newShipWidth);
@@ -179,7 +179,6 @@ namespace ShipCrudApp.ViewModels
                 this.dataService.UpdateShip(shipEditId, newShipName, newShipCode, newShipLength, newShipWidth);
             }
 
-            // display message box
             this.RefreshAllShips();
             this.ResetSave();
         }
@@ -209,6 +208,7 @@ namespace ShipCrudApp.ViewModels
 
         private void EditShip(int shipId)
         {
+            // set the form to edit mode and set the textbox values to the propeties from the current ship
             this.SetFormMode(ShipFormMode.EditShip);
             shipEditId = shipId;
             var shipToEdit = allShips.FirstOrDefault(x => x.Id == shipId);
@@ -225,13 +225,26 @@ namespace ShipCrudApp.ViewModels
 
         private void RefreshAllShips()
         {
+            // fetch the ships collection again from the data service
             AllShips = new ObservableCollection<Ship>(dataService.GetAllShips());
         }
 
-        #endregion
+        private void SetFormMode(ShipFormMode mode)
+        {
+            this.formMode = mode;
+            OnPropertyChanged(nameof(ShipFormTitle));
+        }
 
-        #region Methods
+        #region Initilization
 
+        public void Initialize()
+        {
+            this.RefreshAllShips();
+        }
+
+        /// <summary>
+        /// Initialization of the command properties
+        /// </summary>
         private void ConfigureCommands()
         {
             cancelCommand = new RelayCommand(param => ResetSave(), null);
@@ -242,6 +255,9 @@ namespace ShipCrudApp.ViewModels
             refreshCommand = new RelayCommand(param => RefreshAllShips(), null);
         }
 
+        /// <summary>
+        /// Configuration of validation rules for the properties used in the form textboxes
+        /// </summary>
         private void ConfigureValidationRules()
         {
             this.ValidationRules.Add(nameof(this.NewShipName),
@@ -253,12 +269,7 @@ namespace ShipCrudApp.ViewModels
             this.ValidationRules.Add(nameof(this.NewShipWidth),
                 new List<ValidationRule>() { new NumberValidationRule() });
         }
-
-        private void SetFormMode(ShipFormMode mode)
-        {
-            this.formMode = mode;
-            OnPropertyChanged(nameof(ShipFormTitle));
-        }
+       
         #endregion
     }
 }

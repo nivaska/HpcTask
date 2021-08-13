@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ShipCrudApp.Services
 {
+    /// <summary>
+    /// Ship Repository Interface
+    /// </summary>
     interface IShipRepository
     {
         void AddShip(string name, string code, double length, double width);

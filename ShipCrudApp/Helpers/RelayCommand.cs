@@ -7,6 +7,9 @@ using System.Windows.Input;
 
 namespace ShipCrudApp.Helpers
 {
+    /// <summary>
+    /// Relay Command class with the implemenataion of ICommand Interface
+    /// </summary>
     public class RelayCommand : ICommand
     {
         private Action<object> execute;

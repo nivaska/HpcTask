@@ -3,6 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace ShipCrudApp.Helpers
 {
+    /// <summary>
+    /// Implementation for INotifyPropertyChanged
+    /// </summary>
     public class NotifyPropertyChanged : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

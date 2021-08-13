@@ -97,16 +97,6 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <!--<DataGridTemplateColumn Width="70">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Delete" x:Name="ButtonDelete" Style="{StaticResource GridButton}"
-                                        CommandParameter="{Binding Path=Id}"
-                                        Command="{Binding Path=DataContext.DeleteCommand, RelativeSource={RelativeSource FindAncestor,
-                                                AncestorType=Window}}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>-->
                 </DataGrid.Columns>
             </DataGrid>
 

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ShipCrudApp.Services
 {
+    /// <summary>
+    /// DataService provides access to the repositories to the ViewModels
+    /// </summary>
     public class DataService
     {
         readonly IShipRepository shipRepository;
