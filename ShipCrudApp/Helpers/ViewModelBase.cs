@@ -62,6 +62,15 @@ namespace ShipCrudApp.Helpers
             }
         }
 
+        public void ClearAllErrors()
+        {
+            var allErrorKeys = errorsList.Keys.ToList();
+            foreach (var key in allErrorKeys)
+            {
+                this.ClearErrors(key);
+            }
+        }
+
         public bool ValidateProperty<TValue>(TValue propertyValue, [CallerMemberName] string propertyName = null)
         {
             // Clear previous errors of the current property to be validated 

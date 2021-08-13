@@ -6,7 +6,7 @@ namespace ShipCrudApp.Helpers.ValidationRules
 {
     public class CodeInputValidationRule: ValidationRule
     {
-        private string codeRegexPattern = @"^[A-Za-z]{4}-\d{4}-\w{1}\d{1}$";
+        private string codeRegexPattern = @"^[A-Za-z]{4}-\d{4}-[A-Za-z]{1}\d{1}$";
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             if (!(value is string userInput))

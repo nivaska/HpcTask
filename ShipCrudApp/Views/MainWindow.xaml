@@ -5,20 +5,115 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ShipCrudApp"
         xmlns:vm="clr-namespace:ShipCrudApp.ViewModels"
-        xmlns:views="clr-namespace:ShipCrudApp.Views"
         mc:Ignorable="d"
-        Title="Ships Manager" Height="450" Width="800">
+        Title="Ships Manager" Height="800"  Width="600">
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
-        <TabControl>
-            <TabItem x:Name="Tab1" Header="All Ships" >
-                <views:AllShipsView></views:AllShipsView>
-            </TabItem>
-            <TabItem x:Name="Tab2" Header="New Ship" >
-                <views:NewShipView></views:NewShipView>
-            </TabItem>
-        </TabControl>
+        <StackPanel>
+            <StackPanel  Margin="10" HorizontalAlignment="Left">
+                <Button x:Name="ButtonNew" Content="New Ship" Style="{StaticResource BlueBtn}"
+                            Command="{Binding NewCommand}"/>
+            </StackPanel>
+            <GroupBox Header="{Binding ShipFormTitle}" Margin="10">
+                <Grid Margin="10" Height="350">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Name"  Style="{StaticResource ShipFormLabel}"
+                      Grid.Column="0" Grid.Row="0" />
+                    <TextBox Grid.Row="0" Grid.Column="1" x:Name="TextBoxName" 
+                       Text="{Binding Path=NewShipName, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"  Style="{StaticResource ShipFormTextBox}"  Width="200"
+                 Validation.ErrorTemplate="{DynamicResource ValidationErrorTemplate}"/>
+                    <Label Content="Code"  Style="{StaticResource ShipFormLabel}"
+                       Grid.Column="0" Grid.Row="1" />
+                    <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxCode"
+                       Text="{Binding Path=NewShipCode, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}"  Style="{StaticResource ShipFormTextBox}"  Width="200"
+                 Validation.ErrorTemplate="{DynamicResource ValidationErrorTemplate}"/>
+                    <Label Content="Length"  Style="{StaticResource ShipFormLabel}"
+                       Grid.Row="2" Grid.Column="0"/>
+                    <StackPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBox x:Name="TextBoxLength" 
+                       Text="{Binding Path=NewShipLength, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" Style="{StaticResource ShipFormTextBox}"  Width="70"
+                     Validation.ErrorTemplate="{DynamicResource ValidationErrorTemplate}"/>
+                        <Label VerticalAlignment="Center">m</Label>
+                    </StackPanel>
+                    <Label Content="Width" Style="{StaticResource ShipFormLabel}"
+                        Grid.Row="3" Grid.Column="0"/>
+                    <StackPanel Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" Orientation="Horizontal">
+                        <TextBox x:Name="TextBoxWidth"
+                       Text="{Binding Path=NewShipWidth, Mode=TwoWay, ValidatesOnNotifyDataErrors=True}" Style="{StaticResource ShipFormTextBox}"  Width="70"
+                     Validation.ErrorTemplate="{DynamicResource ValidationErrorTemplate}"/>
+                        <Label VerticalAlignment="Center">m</Label>
+                    </StackPanel>
+                    <StackPanel Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <StackPanel Height="40" Orientation="Horizontal" HorizontalAlignment="Right">
+
+                            <Button x:Name="ButtonSave" Content="Save" Style="{StaticResource GreenBtn}"
+                            Command="{Binding SaveCommand}"/>
+                            <Button x:Name="ButtonCancel" Content="Clear" Style="{StaticResource RedBtn}"
+                            Command="{Binding CancelCommand}" Margin="20, 0, 10, 0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+            <DataGrid x:Name="ShipsGrid" AutoGenerateColumns="False"
+                      ItemsSource="{Binding AllShips}" CanUserAddRows="False" Height="200" Margin="20">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Length (m)" Binding="{Binding Path=Length}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Width (m)" Binding="{Binding Path=Width}" Width="*" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Code" Binding="{Binding Path=Code}" Width="2*" IsReadOnly="True"/>
+                    <DataGridTemplateColumn Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Content="Select" x:Name="ButtonEdit" Style="{StaticResource BlueBtnGrid}"
+                                        CommandParameter="{Binding Path=Id}"
+                                        Command="{Binding Path=DataContext.EditCommand,RelativeSource={RelativeSource FindAncestor,
+                                                AncestorType=Window}}"/>
+                                    <Button Content="Delete" x:Name="ButtonDelete" Style="{StaticResource RedBtnGrid}" Margin="5,2"
+                                        CommandParameter="{Binding Path=Id}"
+                                        Command="{Binding Path=DataContext.DeleteCommand, RelativeSource={RelativeSource FindAncestor,
+                                                AncestorType=Window}}"/>
+                                </StackPanel>
+
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <!--<DataGridTemplateColumn Width="70">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Delete" x:Name="ButtonDelete" Style="{StaticResource GridButton}"
+                                        CommandParameter="{Binding Path=Id}"
+                                        Command="{Binding Path=DataContext.DeleteCommand, RelativeSource={RelativeSource FindAncestor,
+                                                AncestorType=Window}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>-->
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <StackPanel  Margin="10" HorizontalAlignment="Center">
+                <Button x:Name="ButtonRefresh" Content="Refresh Grid" Style="{StaticResource BlueBtn}"
+                            Command="{Binding RefreshCommand}"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>

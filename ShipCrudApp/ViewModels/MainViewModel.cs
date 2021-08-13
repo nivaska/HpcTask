@@ -13,8 +13,15 @@ using System.Windows.Input;
 
 namespace ShipCrudApp.ViewModels
 {
+    enum ShipFormMode
+    {
+        NewShip,
+        EditShip
+    }
+
     public class MainViewModel : ViewModelBase
     {
+        
         private readonly DataService dataService;
         private ObservableCollection<Ship> allShips;
         private string newShipName;
@@ -24,16 +31,20 @@ namespace ShipCrudApp.ViewModels
         private RelayCommand cancelCommand;
         private RelayCommand saveCommand;
         private RelayCommand deleteCommand;
-
+        private RelayCommand editCommand;
+        private RelayCommand newCommand;
+        private RelayCommand refreshCommand;
+        private ShipFormMode formMode;
+        private int shipEditId;
 
         public MainViewModel() : base()
         {
             dataService = new DataService();
-            cancelCommand = new RelayCommand(param => ResetSave(), null);
-            saveCommand = new RelayCommand(param => SaveNewShip(), param => CanSaveNewShip());
-            deleteCommand = new RelayCommand(param => DeleteShip((int)param), null);
+            this.ConfigureCommands();
             this.ConfigureValidationRules();
+            formMode = ShipFormMode.NewShip;
         }
+
 
         public void Initialize()
         {
@@ -97,6 +108,15 @@ namespace ShipCrudApp.ViewModels
             }
         }
 
+        public string ShipFormTitle
+        {
+            get {
+                return this.formMode == ShipFormMode.NewShip ?
+                    "New Ship" :
+                    "Edit Ship";
+            }
+        }
+
         #endregion
 
         #region Commands
@@ -125,25 +145,60 @@ namespace ShipCrudApp.ViewModels
             }
         }
 
-        private void SaveNewShip()
+        public ICommand EditCommand
         {
-            this.dataService.AddNewShip(newShipName, newShipCode, newShipLength, newShipWidth);
+            get
+            {
+                return editCommand;
+            }
+        }
+
+        public ICommand NewCommand
+        {
+            get
+            {
+                return newCommand;
+            }
+        }
+
+        public ICommand RefreshCommand
+        {
+            get
+            {
+                return refreshCommand;
+            }
+        }
+
+        private void SaveShip()
+        {
+            if (this.formMode == ShipFormMode.NewShip)
+            {
+                this.dataService.AddNewShip(newShipName, newShipCode, newShipLength, newShipWidth);
+            } else
+            {
+                this.dataService.UpdateShip(shipEditId, newShipName, newShipCode, newShipLength, newShipWidth);
+            }
+
             // display message box
             this.RefreshAllShips();
             this.ResetSave();
         }
 
-        private bool CanSaveNewShip()
+        private bool CanSaveShip()
         {
-            return !this.HasErrors;
+            return !string.IsNullOrEmpty(this.NewShipName)
+                && !string.IsNullOrEmpty(this.NewShipCode)
+                && !this.HasErrors;
         }
 
         private void ResetSave()
         {
+            this.SetFormMode(ShipFormMode.NewShip);
             this.NewShipName = string.Empty;
             this.NewShipCode = string.Empty;
             this.NewShipLength = 0;
             this.NewShipWidth = 0;
+            this.ClearAllErrors();
         }
 
         private void DeleteShip(int shipId)
@@ -152,13 +207,39 @@ namespace ShipCrudApp.ViewModels
             this.RefreshAllShips();
         }
 
-        #endregion
+        private void EditShip(int shipId)
+        {
+            this.SetFormMode(ShipFormMode.EditShip);
+            shipEditId = shipId;
+            var shipToEdit = allShips.FirstOrDefault(x => x.Id == shipId);
+            this.NewShipName = shipToEdit?.Name;
+            this.NewShipCode = shipToEdit?.Code;
+            this.NewShipLength = shipToEdit?.Length ?? 0;
+            this.NewShipWidth = shipToEdit?.Width ?? 0;
+        }
 
-        #region Methods
+        private void AddNewShip()
+        {
+            this.ResetSave();
+        }
 
         private void RefreshAllShips()
         {
             AllShips = new ObservableCollection<Ship>(dataService.GetAllShips());
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void ConfigureCommands()
+        {
+            cancelCommand = new RelayCommand(param => ResetSave(), null);
+            saveCommand = new RelayCommand(param => SaveShip(), param => CanSaveShip());
+            deleteCommand = new RelayCommand(param => DeleteShip((int)param), null);
+            editCommand = new RelayCommand(param => EditShip((int)param), null);
+            newCommand = new RelayCommand(param => AddNewShip(), null);
+            refreshCommand = new RelayCommand(param => RefreshAllShips(), null);
         }
 
         private void ConfigureValidationRules()
@@ -171,6 +252,12 @@ namespace ShipCrudApp.ViewModels
                 new List<ValidationRule>() { new NumberValidationRule() });
             this.ValidationRules.Add(nameof(this.NewShipWidth),
                 new List<ValidationRule>() { new NumberValidationRule() });
+        }
+
+        private void SetFormMode(ShipFormMode mode)
+        {
+            this.formMode = mode;
+            OnPropertyChanged(nameof(ShipFormTitle));
         }
         #endregion
     }
